@@ -1,85 +1,90 @@
 #include "monty.h"
-/**
- * _strcmp - Function that compares two strings.
- * @s1: type str compared
- * @s2: type str compared
- * Return: 0 if s1 and s2 are equals.
- *         another value if they are different
- */
-int _strcmp(char *s1, char *s2)
-{
-	int i;
 
-	for (i = 0; s1[i] == s2[i] && s1[i]; i++)
-		;
-	if (s1[i] > s2[i])
-		return (1);
-	if (s1[i] < s2[i])
-		return (-1);
-	return (0);
+/**
+ *add_dnodeint_end - add a note at the end of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
+ */
+stack_t *add_dnodeint_end(stack_t **head, const int n)
+{
+	stack_t *temp, *aux;
+
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
+	{
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
+	}
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	aux = *head;
+	while (aux->next)
+		aux = aux->next;
+	temp->next = aux->next;
+	temp->prev = aux;
+	aux->next = temp;
+	return (aux->next);
 }
 
 /**
- * _sch - search if a char is inside a string
- * @s: string to review
- * @c: char to find
- * Return: 1 if success 0 if not
+ *add_dnodeint - add a note at the begining of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
  */
-int _sch(char *s, char c)
+stack_t *add_dnodeint(stack_t **head, const int n)
 {
-	int cont = 0;
+	stack_t *temp;
 
-	while (s[cont] != '\0')
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
 	{
-		if (s[cont] == c)
-		{
-			break;
-		}
-		cont++;
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
 	}
-	if (s[cont] == c)
-		return (1);
-	else
-		return (0);
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	(*head)->prev = temp;
+	temp->next = (*head);
+	temp->prev = NULL;
+	*head = temp;
+	return (*head);
 }
 
 /**
- * _strtoky - function that cut a string into tokens depending of the delimit
- * @s: string to cut in parts
- * @d: delimiters
- * Return: first partition
+ * free_dlistint - frees the doubly linked list
+ *
+ * @head: head of the list
+ * Return: no return
  */
-char *_strtoky(char *s, char *d)
+void free_dlistint(stack_t *head)
 {
-	static char *ultimo;
-	int i = 0, j = 0;
+	stack_t *tmp;
 
-	if (!s)
-		s = ultimo;
-	while (s[i] != '\0')
+	while ((tmp = head) != NULL)
 	{
-		if (_sch(d, s[i]) == 0 && s[i + 1] == '\0')
-		{
-			ultimo = s + i + 1;
-			*ultimo = '\0';
-			s = s + j;
-			return (s);
-		}
-		else if (_sch(d, s[i]) == 0 && _sch(d, s[i + 1]) == 0)
-			i++;
-		else if (_sch(d, s[i]) == 0 && _sch(d, s[i + 1]) == 1)
-		{
-			ultimo = s + i + 1;
-			*ultimo = '\0';
-			ultimo++;
-			s = s + j;
-			return (s);
-		}
-		else if (_sch(d, s[i]) == 1)
-		{
-			j++;
-			i++;
-		}
+		head = head->next;
+		free(tmp);
 	}
-	return (NULL);
 }
